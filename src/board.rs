@@ -1,6 +1,6 @@
-use std::collections::{HashSet, hash_set};
+use std::collections::HashSet;
 
-use rand::RngExt;
+use rand::seq::IteratorRandom;
 
 use crate::apple::Apple;
 use crate::direction::{Direction, InputQueue};
@@ -30,9 +30,9 @@ impl Board {
         }
 
         let snake = Snake::new(snake_pos, 3, Direction::Right);
-        let apples = hashset![Apple {
+        let apples = HashSet::from([Apple {
             position: Vec2i::new(size_x - 3, size_y / 2 + 1),
-        }];
+        }]);
 
         for segment in &snake.segments {
             free_spaces.remove(&segment.position);
@@ -63,8 +63,8 @@ impl Board {
         let next_head_pos = snake.head().position + Vec2i::from_direction(direction);
 
         let grow = if let Some(apple) = self.apple_at(next_head_pos) {
-            self.apples.remove(apple);
-            // MAKE NEW APPLE!!!!
+            self.apples.remove(&apple);
+            self.place_apple();
             true
         } else {
             self.free_spaces.remove(&self.snake.tail().position);
@@ -87,25 +87,6 @@ impl Board {
 
     pub fn place_apple(&self) {
         let mut rng = rand::rng();
-        let apple_position = loop {
-            let pos_candidate = Vec2i::new(
-                rng.random_range(0..self.size.x),
-                rng.random_range(0..self.size.y),
-            );
-
-            for snake_segment in &self.snake.segments {
-                if snake_segment.position == pos_candidate {
-                    continue;
-                }
-            }
-
-            for apple in &self.apples {
-                if apple.position == pos_candidate {
-                    continue;
-                }
-            }
-
-            break pos_candidate;
-        };
+        self.free_spaces.iter().choose(&mut rng);
     }
 }

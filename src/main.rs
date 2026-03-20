@@ -6,15 +6,31 @@ mod vec2i;
 
 use direction::{Direction, InputQueue};
 
-use std::time::{Duration, Instant};
-
 use crossterm::{
     event::{Event, KeyCode, KeyEvent, poll, read},
-    terminal::{disable_raw_mode, enable_raw_mode},
+    execute,
+    style::{Color, SetBackgroundColor},
+    terminal::{
+        Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode,
+        enable_raw_mode,
+    },
 };
+use std::io;
+use std::io::Write;
+use std::time::{Duration, Instant};
 
 fn main() {
+    let mut stdout = io::stdout();
+
     enable_raw_mode().expect("Failed to enable raw mode");
+    execute!(stdout, EnterAlternateScreen).expect("Failed to enter alternate screen");
+
+    execute!(
+        stdout,
+        SetBackgroundColor(Color::Rgb { r: 0, g: 255, b: 0 }),
+        Clear(ClearType::All)
+    )
+    .expect("color no worky");
 
     let tick_rate = Duration::from_millis(500);
     let mut input_queue = InputQueue::new();
@@ -49,10 +65,11 @@ fn main() {
                 _ => continue,
             }
 
-            print!("Ran input loop, current queue: {:?}", input_queue)
+            writeln!(stdout, "Ran input loop, current queue: {:?}", input_queue);
         }
     }
 
+    execute!(stdout, LeaveAlternateScreen).expect("Failed to leave alternate screen");
     disable_raw_mode().expect("Failed disabling raw mode...");
 }
 

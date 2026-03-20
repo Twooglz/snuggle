@@ -1,6 +1,7 @@
 mod apple;
 mod board;
 mod direction;
+mod render;
 mod snake;
 mod vec2i;
 

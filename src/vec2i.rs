@@ -8,8 +8,8 @@ pub struct Vec2i {
 }
 
 impl Vec2i {
-    pub const UP: Self = Self { x: 0, y: 1 };
-    pub const DOWN: Self = Self { x: 0, y: -1 };
+    pub const UP: Self = Self { x: 0, y: -1 };
+    pub const DOWN: Self = Self { x: 0, y: 1 }; // 0, 0 is top left, therefore y+ is down
     pub const LEFT: Self = Self { x: -1, y: 0 };
     pub const RIGHT: Self = Self { x: 1, y: 0 };
     pub const ZERO: Self = Self { x: 0, y: 0 };

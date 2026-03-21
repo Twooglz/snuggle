@@ -67,7 +67,7 @@ impl<const W: usize, const H: usize> RenderBuffer<W, H> {
         self.rows[y][x] = tile;
     }
 
-    pub fn write_buffer(&self) {
+    pub fn write(&self) {
         let mut stdout = stdout();
         let _ = execute!(stdout, Clear(ClearType::All), MoveTo(0, 0));
 

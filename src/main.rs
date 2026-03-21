@@ -22,7 +22,10 @@ use std::io;
 use std::io::Write;
 use std::time::{Duration, Instant};
 
-use crate::render::{RenderBuffer, Tile};
+use crate::{
+    board::Board,
+    render::{RenderBuffer, Tile},
+};
 
 fn main() {
     let mut stdout = io::stdout();
@@ -30,28 +33,23 @@ fn main() {
     enable_raw_mode().expect("Failed to enable raw mode");
     execute!(stdout, EnterAlternateScreen).expect("Failed to enter alternate screen");
 
-    let tick_rate = Duration::from_millis(500);
+    let tick_duration = Duration::from_millis(250);
     let mut input_handler = InputHandler::new();
+
+    let mut board = Board::<20, 20>::new();
+    let _ = execute!(stdout, Clear(ClearType::All));
 
     // Game loop
     'game_loop: loop {
-        let _ = execute!(stdout, Clear(ClearType::All),);
+        board.render_buffer().write();
 
-        let mut render_buffer = RenderBuffer::<10, 10>::new(Tile::new("..").with_fg(Color::Blue));
-
-        for x in 2..=6 {
-            render_buffer.set(Tile::new("[]").with_fg(Color::Green), x, 2);
-        }
-
-        render_buffer.set(Tile::new("[]").with_fg(Color::Red), 5, 5);
-
-        render_buffer.write_buffer();
-
-        input_handler.read_inputs(Duration::from_millis(500));
+        input_handler.read_inputs(tick_duration);
 
         if input_handler.exit_pressed() {
             break 'game_loop;
         }
+
+        board.update(&mut input_handler);
 
         // // Register inputs
         // loop {

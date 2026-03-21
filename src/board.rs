@@ -1,8 +1,8 @@
-use std::collections::HashSet;
-use std::num::NonZeroUsize;
-
 use crossterm::style::Color;
 use rand::seq::IteratorRandom;
+use std::collections::HashSet;
+use std::io::Write;
+use std::num::NonZeroUsize;
 
 use crate::apple::Apple;
 use crate::direction::Direction;
@@ -53,16 +53,22 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
 
     pub fn update(&mut self, input_handler: &mut InputHandler) {
-        let snake = &self.snake;
-        let direction: Direction = match input_handler.pop() {
-            Some(input) if input != snake.facing() => input,
-            Some(_) => input_handler.pop().unwrap_or(snake.facing()),
-            // the input is the same direction we're facing, do the next input, if that's None just set the direction to where snakey's looking
-            // InputQueue has unique elements, so if the next input isn't None it's valid.
-            None => snake.facing(),
-        };
+        {
+            let snake = &mut self.snake;
 
-        let next_head_pos = snake.head().position + Vec2i::from_direction(direction);
+            let direction: Direction = match input_handler.pop() {
+                Some(input) if input != snake.facing() => input,
+                Some(_) => input_handler.pop().unwrap_or(snake.facing()),
+                // the input is the same direction we're facing, do the next input, if that's None just set the direction to where snakey's looking
+                // InputQueue has unique elements, so if the next input isn't None it's valid.
+                None => snake.facing(),
+            };
+            let _ = write!(std::io::stdout(), "Going {:?}!", direction);
+
+            snake.set_facing(direction);
+        }
+
+        let next_head_pos = self.snake.next_head_pos();
 
         let grow = if let Some(apple) = self.apple_at(next_head_pos) {
             self.apples.remove(&apple);
@@ -75,7 +81,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
 
         self.free_spaces.remove(&next_head_pos);
         let snake = &mut self.snake;
-        snake.slither(direction, grow);
+        snake.slither(grow);
     }
 
     pub fn apple_at(&self, position: Vec2i) -> Option<Apple> {
@@ -87,9 +93,16 @@ impl<const W: usize, const H: usize> Board<W, H> {
         None
     }
 
-    pub fn place_apple(&self) {
+    pub fn place_apple(&mut self) {
         let mut rng = rand::rng();
-        self.free_spaces.iter().choose(&mut rng);
+        let space = self
+            .free_spaces
+            .iter()
+            .choose(&mut rng)
+            .expect("Couldn't place apple!");
+        self.apples.insert(Apple {
+            position: space.clone(),
+        });
     }
 
     pub fn render_buffer(&self) -> RenderBuffer<W, H> {

@@ -35,12 +35,13 @@ impl InputHandler {
     }
 
     pub fn read_inputs(&mut self, duration: Duration) {
+        let read_start = Instant::now();
         // Register inputs
         loop {
-            let time_until_tick: Duration = duration.saturating_sub(Instant::now().elapsed());
+            let time_until_tick: Duration = duration.saturating_sub(read_start.elapsed());
 
             if time_until_tick <= Duration::ZERO {
-                break;
+                return;
             }
 
             match read_key_events(time_until_tick) {

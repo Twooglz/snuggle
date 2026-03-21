@@ -20,31 +20,45 @@ use std::io;
 use std::io::Write;
 use std::time::{Duration, Instant};
 
+use crate::render::{RenderBuffer, Tile};
+
 fn main() {
     let mut stdout = io::stdout();
 
     enable_raw_mode().expect("Failed to enable raw mode");
     execute!(stdout, EnterAlternateScreen).expect("Failed to enter alternate screen");
 
-    execute!(
-        stdout,
-        SetBackgroundColor(Color::Rgb { r: 0, g: 255, b: 0 }),
-        Clear(ClearType::All)
-    )
-    .expect("color no worky");
+    // execute!(
+    //     stdout,
+    //     SetBackgroundColor(Color::Rgb { r: 0, g: 255, b: 0 }),
+    //     Clear(ClearType::All)
+    // )
+    // .expect("color no worky");
 
     let tick_rate = Duration::from_millis(500);
     let mut input_queue = InputQueue::new();
 
     // Game loop
     'game_loop: loop {
+        let _ = execute!(stdout, Clear(ClearType::All),);
+
+        let mut render_buffer = RenderBuffer::<10, 10>::new(Tile::new("..").with_fg(Color::Blue));
+
+        for x in 2..=6 {
+            render_buffer.set(Tile::new("[]").with_fg(Color::Green), x, 2);
+        }
+
+        render_buffer.set(Tile::new("[]").with_fg(Color::Red), 5, 5);
+
+        render_buffer.write_buffer();
+
         let now = Instant::now();
 
         // Register inputs
         loop {
             let time_until_tick: Duration = tick_rate.saturating_sub(now.elapsed());
 
-            if time_until_tick == Duration::ZERO {
+            if time_until_tick <= Duration::ZERO {
                 break;
             }
 
@@ -65,9 +79,13 @@ fn main() {
                 }
                 _ => continue,
             }
-
-            writeln!(stdout, "Ran input loop, current queue: {:?}", input_queue);
         }
+
+        // let _ = write!(
+        //     stdout,
+        //     "Ran input loop, current queue: {:?}\r\n",
+        //     input_queue
+        // );
     }
 
     execute!(stdout, LeaveAlternateScreen).expect("Failed to leave alternate screen");

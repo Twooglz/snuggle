@@ -4,7 +4,7 @@ use crossterm::{
     cursor::MoveTo,
     execute,
     style::{Color, SetBackgroundColor, SetForegroundColor},
-    terminal::{Clear, ClearType},
+    terminal::{BeginSynchronizedUpdate, Clear, ClearType, EndSynchronizedUpdate},
 };
 
 #[derive(Clone, Copy)]
@@ -69,7 +69,12 @@ impl<const W: usize, const H: usize> RenderBuffer<W, H> {
 
     pub fn write(&self) {
         let mut stdout = stdout();
-        let _ = execute!(stdout, Clear(ClearType::All), MoveTo(0, 0));
+        let _ = execute!(
+            stdout,
+            BeginSynchronizedUpdate,
+            Clear(ClearType::All),
+            MoveTo(0, 0)
+        );
 
         for y in 0..H {
             for x in 0..W {
@@ -87,5 +92,7 @@ impl<const W: usize, const H: usize> RenderBuffer<W, H> {
             }
             let _ = write!(stdout, "\n\r");
         }
+
+        let _ = execute!(stdout, EndSynchronizedUpdate);
     }
 }

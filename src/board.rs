@@ -63,7 +63,6 @@ impl<const W: usize, const H: usize> Board<W, H> {
                 // InputQueue has unique elements, so if the next input isn't None it's valid.
                 None => snake.facing(),
             };
-            let _ = write!(std::io::stdout(), "Going {:?}!", direction);
 
             snake.set_facing(direction);
         }

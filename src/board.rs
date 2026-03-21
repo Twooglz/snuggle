@@ -1,21 +1,24 @@
 use std::collections::HashSet;
+use std::num::NonZeroUsize;
 
+use crossterm::style::Color;
 use rand::seq::IteratorRandom;
 
 use crate::apple::Apple;
-use crate::direction::{Direction, InputQueue};
+use crate::direction::Direction;
+use crate::input::InputHandler;
+use crate::render::{RenderBuffer, Tile};
 use crate::snake::Snake;
 use crate::vec2i::Vec2i;
 
-pub struct Board {
+pub struct Board<const W: usize, const H: usize> {
     snake: Snake,
     apples: HashSet<Apple>,
-    size: Vec2i,
     free_spaces: HashSet<Vec2i>,
 }
 
-impl Board {
-    pub fn new(size_x: i32, size_y: i32) -> Board {
+impl<const W: usize, const H: usize> Board<W, H> {
+    pub fn new(size_x: i32, size_y: i32) -> Self {
         let snake_pos = Vec2i::new(
             5, // maybe i'll make some actual formula one day, this'll do for now though
             size_y / 2 + 1,
@@ -42,19 +45,18 @@ impl Board {
             free_spaces.remove(&apple.position);
         }
 
-        Board {
+        Board::<W, H> {
             snake,
             apples,
-            size: Vec2i::new(size_x, size_y),
             free_spaces,
         }
     }
 
-    pub fn tick(&mut self, input_queue: &mut InputQueue) {
+    pub fn update(&mut self, input_handler: &mut InputHandler) {
         let snake = &self.snake;
-        let direction: Direction = match input_queue.pop() {
+        let direction: Direction = match input_handler.pop() {
             Some(input) if input != snake.facing() => input,
-            Some(_) => input_queue.pop().unwrap_or(snake.facing()),
+            Some(_) => input_handler.pop().unwrap_or(snake.facing()),
             // the input is the same direction we're facing, do the next input, if that's None just set the direction to where snakey's looking
             // InputQueue has unique elements, so if the next input isn't None it's valid.
             None => snake.facing(),
@@ -88,5 +90,25 @@ impl Board {
     pub fn place_apple(&self) {
         let mut rng = rand::rng();
         self.free_spaces.iter().choose(&mut rng);
+    }
+
+    pub fn render_buffer(&self) -> RenderBuffer<W, H> {
+        let mut render_buffer = RenderBuffer::<W, H>::new(Tile::new("..").with_fg(Color::Blue));
+
+        for segment in &self.snake.segments {
+            let x: usize = segment.position.x as usize;
+            let y: usize = segment.position.y as usize;
+
+            render_buffer.set(Tile::new("[]").with_fg(Color::Green), x, y)
+        }
+
+        for apple in &self.apples {
+            let x: usize = apple.position.x as usize;
+            let y: usize = apple.position.y as usize;
+
+            render_buffer.set(Tile::new("[]").with_fg(Color::Red), x, y)
+        }
+
+        render_buffer
     }
 }

@@ -16,30 +16,3 @@ impl Direction {
         }
     }
 }
-
-#[derive(Debug)]
-pub struct InputQueue {
-    queue: Vec<Direction>,
-}
-
-// first in first out
-impl InputQueue {
-    pub fn new() -> Self {
-        Self { queue: Vec::new() }
-    }
-
-    pub fn empty(&self) -> bool {
-        self.queue.is_empty()
-    }
-
-    pub fn add(&mut self, direction: Direction) {
-        if self.queue.contains(&direction) {
-            return;
-        }
-        self.queue.insert(0, direction);
-    }
-
-    pub fn pop(&mut self) -> Option<Direction> {
-        self.queue.pop()
-    }
-}

@@ -18,23 +18,23 @@ pub struct Board<const W: usize, const H: usize> {
 }
 
 impl<const W: usize, const H: usize> Board<W, H> {
-    pub fn new(size_x: i32, size_y: i32) -> Self {
+    pub fn new() -> Self {
         let snake_pos = Vec2i::new(
             5, // maybe i'll make some actual formula one day, this'll do for now though
-            size_y / 2 + 1,
+            H as i32 / 2 + 1,
         );
 
         let mut free_spaces: HashSet<Vec2i> = HashSet::new();
 
-        for x in 0..size_x {
-            for y in 0..size_y {
-                free_spaces.insert(Vec2i::new(x, y));
+        for x in 0..W {
+            for y in 0..H {
+                free_spaces.insert(Vec2i::new(x as i32, y as i32));
             }
         }
 
         let snake = Snake::new(snake_pos, 3, Direction::Right);
         let apples = HashSet::from([Apple {
-            position: Vec2i::new(size_x - 3, size_y / 2 + 1),
+            position: Vec2i::new(W as i32 - 3, H as i32 / 2 + 1),
         }]);
 
         for segment in &snake.segments {

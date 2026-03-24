@@ -1,8 +1,6 @@
 use crossterm::style::Color;
 use rand::seq::IteratorRandom;
 use std::collections::HashSet;
-use std::io::Write;
-use std::num::NonZeroUsize;
 
 use crate::apple::Apple;
 use crate::direction::Direction;

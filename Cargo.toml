@@ -2,6 +2,7 @@
 name = "snuggle"
 version = "0.1.0"
 edition = "2024"
+authors = ["twooglz"]
 
 [dependencies]
 crossterm = "0.29.0"

@@ -27,7 +27,7 @@ fn main() {
     enable_raw_mode().expect("Failed to enable raw mode");
     execute!(stdout, EnterAlternateScreen).expect("Failed to enter alternate screen");
 
-    let tick_duration = Duration::from_millis(250);
+    let tick_duration = Duration::from_millis(200);
     let mut input_handler = InputHandler::new();
 
     let mut board = Board::<20, 20>::new();

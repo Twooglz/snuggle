@@ -8,4 +8,4 @@ Theres a flickering issue in some terminals (Windows terminal, regular old Linux
 
 I'll also add some config flags at some point.
 
-https://cdn.discordapp.com/emojis/1484148638442717204.webp?size=96
+![colon three](https://cdn.discordapp.com/emojis/1484148638442717204.webp?size=96)

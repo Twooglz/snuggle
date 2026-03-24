@@ -130,13 +130,14 @@ impl<const W: usize, const H: usize> Board<W, H> {
             render_buffer.set(Tile::new("[]").with_fg(Color::Red), x, y)
         }
 
-        for x in 0..W {
-            for y in 0..H {
-                if self.free_spaces.contains(&Vec2i::new(x as i32, y as i32)) {
-                    render_buffer.set(render_buffer.get(x, y).with_fg(Color::Yellow), x, y)
-                }
-            }
-        }
+        // This renders free spaces as yellow
+        // for x in 0..W {
+        //     for y in 0..H {
+        //         if self.free_spaces.contains(&Vec2i::new(x as i32, y as i32)) {
+        //             render_buffer.set(render_buffer.get(x, y).with_fg(Color::Yellow), x, y)
+        //         }
+        //     }
+        // }
 
         render_buffer
     }

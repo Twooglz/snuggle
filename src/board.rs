@@ -61,12 +61,17 @@ impl<const W: usize, const H: usize> Board<W, H> {
         {
             let snake = &mut self.snake;
 
-            let direction: Direction = match input_handler.pop() {
-                Some(input) if input != snake.facing() => input,
-                Some(_) => input_handler.pop().unwrap_or(snake.facing()),
-                // the input is the same direction we're facing, do the next input, if that's None just set the direction to where snakey's looking
-                // InputQueue has unique elements, so if the next input isn't None it's valid.
-                None => snake.facing(),
+            let direction: Direction = loop {
+                if input_handler.queue_empty() {
+                    break snake.facing();
+                }
+                let input = input_handler.pop().expect("something broke");
+
+                if input == snake.facing() || input == snake.facing().opposite() {
+                    continue;
+                }
+
+                break input;
             };
 
             snake.set_facing(direction);

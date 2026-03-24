@@ -15,6 +15,7 @@ pub struct Board<const W: usize, const H: usize> {
     snake: Snake,
     apples: HashSet<Apple>,
     free_spaces: HashSet<Vec2i>,
+    fail: bool,
 }
 
 impl<const W: usize, const H: usize> Board<W, H> {
@@ -23,7 +24,6 @@ impl<const W: usize, const H: usize> Board<W, H> {
             5, // maybe i'll make some actual formula one day, this'll do for now though
             H as i32 / 2 + 1,
         );
-
         let mut free_spaces: HashSet<Vec2i> = HashSet::new();
 
         for x in 0..W {
@@ -49,7 +49,12 @@ impl<const W: usize, const H: usize> Board<W, H> {
             snake,
             apples,
             free_spaces,
+            fail: false,
         }
+    }
+
+    pub fn failed(&mut self) -> bool {
+        self.fail
     }
 
     pub fn update(&mut self, input_handler: &mut InputHandler) {
@@ -74,13 +79,20 @@ impl<const W: usize, const H: usize> Board<W, H> {
             self.place_apple();
             true
         } else {
-            self.free_spaces.remove(&self.snake.tail().position);
+            if !self.free_spaces.contains(&next_head_pos) {
+                self.fail = true;
+            }
+
+            self.free_spaces.insert(self.snake.tail().position.clone());
             false
         };
 
-        self.free_spaces.remove(&next_head_pos);
         let snake = &mut self.snake;
         snake.slither(grow);
+
+
+        self.free_spaces.remove(&next_head_pos);
+
     }
 
     pub fn apple_at(&self, position: Vec2i) -> Option<Apple> {
@@ -119,6 +131,14 @@ impl<const W: usize, const H: usize> Board<W, H> {
             let y: usize = apple.position.y as usize;
 
             render_buffer.set(Tile::new("[]").with_fg(Color::Red), x, y)
+        }
+
+        for x in 0..W {
+            for y in 0..H {
+                if self.free_spaces.contains(&Vec2i::new(x as i32, y as i32)) {
+                    render_buffer.set(render_buffer.get(x, y).with_fg(Color::Yellow), x, y)
+                }
+            }
         }
 
         render_buffer

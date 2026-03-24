@@ -33,19 +33,26 @@ fn main() {
     let mut board = Board::<20, 20>::new();
     let _ = execute!(stdout, Clear(ClearType::All));
 
+    let mut failed;
+
     // Game loop
     'game_loop: loop {
         board.render_buffer().write();
 
         input_handler.read_inputs(tick_duration);
 
-        if input_handler.exit_pressed() {
+        board.update(&mut input_handler);
+
+        failed = board.failed();
+
+        if input_handler.exit_pressed() || failed {
             break 'game_loop;
         }
-
-        board.update(&mut input_handler);
     }
-
     execute!(stdout, LeaveAlternateScreen).expect("Failed to leave alternate screen");
     disable_raw_mode().expect("Failed disabling raw mode...");
+
+    if failed {
+        println!("You died!")
+    }
 }

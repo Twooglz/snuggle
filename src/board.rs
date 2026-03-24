@@ -90,9 +90,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
         let snake = &mut self.snake;
         snake.slither(grow);
 
-
         self.free_spaces.remove(&next_head_pos);
-
     }
 
     pub fn apple_at(&self, position: Vec2i) -> Option<Apple> {
@@ -106,14 +104,13 @@ impl<const W: usize, const H: usize> Board<W, H> {
 
     pub fn place_apple(&mut self) {
         let mut rng = rand::rng();
-        let space = self
+        let space = *self
             .free_spaces
             .iter()
             .choose(&mut rng)
             .expect("Couldn't place apple!");
-        self.apples.insert(Apple {
-            position: space.clone(),
-        });
+        self.apples.insert(Apple { position: space });
+        self.free_spaces.remove(&space);
     }
 
     pub fn render_buffer(&self) -> RenderBuffer<W, H> {

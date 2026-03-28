@@ -10,6 +10,7 @@ use direction::Direction;
 use input::InputHandler;
 
 use crossterm::{
+    cursor::{Hide, Show},
     execute,
     terminal::{
         Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode,
@@ -31,7 +32,7 @@ fn main() {
     let mut input_handler = InputHandler::new();
 
     let mut board = Board::<20, 20>::new();
-    let _ = execute!(stdout, Clear(ClearType::All));
+    let _ = execute!(stdout, Clear(ClearType::All), Hide);
 
     let mut failed;
 
@@ -49,7 +50,7 @@ fn main() {
             break 'game_loop;
         }
     }
-    execute!(stdout, LeaveAlternateScreen).expect("Failed to leave alternate screen");
+    execute!(stdout, LeaveAlternateScreen, Show).expect("Failed to leave alternate screen");
     disable_raw_mode().expect("Failed disabling raw mode...");
 
     if failed {

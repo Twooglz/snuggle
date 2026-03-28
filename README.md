@@ -2,10 +2,11 @@
 This is a fairly simple snake clone, all inside of your terminal!
 This is my first Rust project, so apologies for the weird shitty code.
 
-It's currently in a fairly functional state, this works best on modern Linux terminal emulators like kitty.
+It's currently in a fairly functional state, this works best on modern Linux terminal emulators like kitty
 
-Theres a flickering issue in some terminals (Windows terminal, regular old Linux TTY), I'll fix this some day.
+I'll also add some config flags at some point hopefully
 
-I'll also add some config flags at some point.
-
-![colon three](https://cdn.discordapp.com/emojis/1484148638442717204.webp?size=96)
+### unrelated images:
+![colon three](https://cdn.discordapp.com/emojis/1484148638442717204.webp?size=96)i
+![thanks for the upvote kind stranger!](https://cdn.discordapp.com/attachments/1404945864866398279/1421611716763979847/ZvfbpFE.gif)
+![funny bedrock breaking thing by carbsna on youtube](https://cdn.discordapp.com/attachments/1266132261804445890/1454492816607547537/0xKTCq6.gif)

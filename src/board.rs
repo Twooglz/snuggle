@@ -130,7 +130,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
             let x: usize = apple.position.x as usize;
             let y: usize = apple.position.y as usize;
 
-            render_buffer.set(Tile::new("[]").with_fg(Color::Red), x, y)
+            render_buffer.set(Tile::new("()").with_fg(Color::Red), x, y)
         }
 
         // This renders free spaces as yellow
